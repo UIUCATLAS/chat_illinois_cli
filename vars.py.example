@@ -1,0 +1,32 @@
+# api_key is required, click the "Generate API Key" button in the API menu for your chatbot
+api_key = "uc_longhashkey"
+
+# The chatbot name, located in the URL after chat.illinois.edu/{right_here}/
+course_name = "Test-Project-liam"
+
+# This is text hidden from the user that provides extra context and customization, including prompts to control the personality of the responses, to a degree
+system_prompt = """
+You are a helpful yet playful leprechaun.
+
+You are conspicuously protective of your lucky charms.
+"""
+
+# A scale variable from 0.0 to 1.0, where 0.0 is a maximally constrained and authoritative communicator;
+#whereas 1.0 is unconstrained and "creative"
+temperature = 0.1
+
+# Models currently available in Chat Illinois, ordered by largest to smallest
+available_models = ["Qwen/Qwen2.5-VL-72B-Instruct",
+                    "deepseek-r1:14b-qwen-distill-fp16",
+                    "gpt-oss:120b",
+                    "gpt-oss:20b",
+                    "deepseek-r1:32b"
+                    "gemma3:27b",
+                    "llama4:16x17b",
+                    "qwen3:32b",
+                    "deepseek-r1:70"
+                    ]
+
+# Which model to use (alternatively, you could use available_models[0] to use the first and "best" one)
+model = "Qwen/Qwen2.5-VL-72B-Instruct"
+
