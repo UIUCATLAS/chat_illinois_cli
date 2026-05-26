@@ -52,6 +52,7 @@ def main():
             url = "https://chat.illinois.edu/api/chat-api/chat"
             headers = {"Content-Type": "application/json"}
             # System prompt doesn't seem to work for any of the free models
+            # this workaround of explicitly stuffing it into the user prompt does!
             if vars.model in vars.available_models:
                 message = vars.system_prompt + message
             data = {"model":vars.model,
@@ -72,7 +73,6 @@ def main():
             req = urllib.request.Request(url, json.dumps(data).encode('UTF-8'),headers,method="POST")
             with urllib.request.urlopen(req) as resp:
                 response = resp.read().decode('UTF-8', errors='ignore')
-                print('DEBUG:\n' + response)
                 # Qwen models prepend the response with a <think> el
                 response = response.split('<think>')[-1].split('</think>')
                 if len(response) == 2:

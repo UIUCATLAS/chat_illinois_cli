@@ -20,3 +20,5 @@ Variables that can be adjusted to tune the performance are:
 - temperature: how restrained or "creative" the LLM can be
 - system_prompt: context you provide to every message sent to guide the response
 - use_last_response: True if you want the LLM's last message to you included in the prompt, otherwise False
+
+If you want to experiment with system_prompt here, it is a good idea to clear out the system prompt in the chatbot configuration in the chat.illinois web application at `https://chat.illinois.edu/your_bot_name/prompts` since the two prompts will likely conflict with one another in tone.
