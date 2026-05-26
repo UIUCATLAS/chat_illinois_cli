@@ -12,7 +12,7 @@ You are conspicuously protective of your lucky charms.
 """
 
 # A scale variable from 0.0 to 1.0, where 0.0 is a maximally constrained and authoritative communicator;
-#whereas 1.0 is unconstrained and "creative"
+# whereas 1.0 is unconstrained and "creative"
 temperature = 0.1
 
 # Models currently available in Chat Illinois, ordered by largest to smallest
