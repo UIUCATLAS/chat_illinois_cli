@@ -15,4 +15,8 @@ The app uses only built-in modules, so if you have python 3 installed, it should
 
 Run the chat.py script and either send a message to the LLM along with the other data you can tune in the vars.py file, type reload to update a newly saved version of vars.py, or quit to stop playing with the LLM.
 
-Variables that can be theoretically tuned to improve the performance are which model to use, the temperature, and the system prompt.
+Variables that can be adjusted to tune the performance are:
+- model: which model to use, with the free ones listed in "available_models"
+- temperature: how restrained or "creative" the LLM can be
+- system_prompt: context you provide to every message sent to guide the response
+- use_last_response: True if you want the LLM's last message to you included in the prompt, otherwise False

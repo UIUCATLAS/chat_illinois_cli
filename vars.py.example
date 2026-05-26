@@ -30,3 +30,6 @@ available_models = ["Qwen/Qwen2.5-VL-72B-Instruct",
 # Which model to use (alternatively, you could use available_models[0] to use the first and "best" one)
 model = "Qwen/Qwen2.5-VL-72B-Instruct"
 
+# Should the bot's last response be included in the context to keep a conversation flowing?
+use_last_response = False
+
