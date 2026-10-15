@@ -28,6 +28,8 @@ Variables that can be adjusted to tune the performance are:
 
 Alternatively to adjusting the last two variables, you can change the text in the instructions or knowledgebase files and issue the `reload` command to reload the updates.
 
+The `reasoning_effort` parameter is something no interns have experimented with before, and the system prompt is structured properly with this system, which is also new.
+
 ## Results
 
 Results are stored in the `results` directory. Full data for all questions asked are stored in report files and a csv file records the running response time data for each model and can be imported into Excel for basic statistical analysis.
