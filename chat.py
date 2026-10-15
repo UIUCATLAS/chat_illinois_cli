@@ -1,11 +1,18 @@
-import sys
+import os
+import os.path
 import vars
 import json
 import time
 import importlib
 import traceback
 import urllib.request
+from datetime import datetime
 
+try:
+    import markdown
+    canmarkdown = True
+except:
+    canmarkdown = False
 
 def secs2time(secs):
     if secs <= 0.01:
@@ -30,58 +37,90 @@ def secs2time(secs):
         secs = '.'.join(secs) + ' seconds'
     return ''.join([hours, minutes, secs])
 
-def print_vars():
+def print_vars(system_prompt):
     print("Model: " + vars.model)
     print("Temp: " + str(vars.temperature))
+    print("Effort: " + vars.reasoning_effort)
     print("Use last response: " + str(vars.use_last_response))
-    print("System Prompt:\n" + vars.system_prompt + '\n')
+    print("System Prompt:\n" + system_prompt[:1000] + '...\n')
+
+def log_data(question, response, duration, before):
+    pathname = f'results/{str(before).split('.')[0]}'
+    if not os.path.exists('results'):
+        os.mkdir('results')
+    answer = response['choices'][0]['message']['content'].replace('\\n','\n')
+    if canmarkdown:
+        with open(f'{pathname}.html','w', encoding='UTF-8') as f:
+            f.write('<!DOCTYPE HTML>\n<html lang="en"><body>')
+            f.write(f'<h1>Chat Report from {datetime.fromtimestamp(before).strftime("%m/%d/%Y, %H:%M:%S")}</h1>\n')
+            f.write('<h2>Question</h2>\n')
+            f.write(markdown.markdown(question))
+            f.write('<h2>Answer</h2>\n')
+            f.write(markdown.markdown(answer))
+            if 'reasoning' in response['choices'][0]['message']:
+                f.write('<h2>Reasoning</h2>\n')
+                f.write(markdown.markdown(response['choices'][0]['message']['reasoning'].replace('\\n','\n')))
+            f.write(f'<h2>Response time</h2><p>{secs2time(duration)}</p>')
+            f.write('</body></html>')
+    else:
+        with open(f'{pathname}.md','w', encoding='UTF-8') as f:
+            f.write(f'# Chat Report from {before.strftime("%m/%d/%Y, %H:%M:%S")}\n\n')
+            f.write('## Question\n\n')
+            f.write(question)
+            f.write('## Answer\n\n')
+            f.write(answer)
+            if 'reasoning' in response['choices'][0]['message']:
+                f.write('## Reasoning\n\n')
+                f.write(response['choices'][0]['message']['reasoning'].replace('\\n','\n'))
+            f.write(f'## Response time</h2>\n{str2time(duration)}')
+    with open('results/' + vars.model.replace('/','_') + '.csv','a') as csvfile:
+        csvfile.write(str(duration) + '\n')
+    return answer
 
 def main():
-    print_vars()
+    with open(vars.instructions_filename,'r', encoding='UTF-8') as prompt:
+        system_prompt = prompt.read() + '\n'
+    with open(vars.knowledgebase_filename,'r', encoding='UTF-8') as prompt:
+        system_prompt += prompt.read()
     lastresponse = ''
     while (message := input('Type a message to send, quit, or reload: ')).lower() != 'quit':
         if message.lower() == 'reload':
             try:
                 importlib.reload(vars)
-                print_vars()
+                with open(vars.instructions_filename,'r',encoding='UTF-8') as prompt:
+                    system_prompt = prompt.read() + '\n'
+                with open(vars.knowledgebase_filename,'r',encoding='UTF-8') as prompt:
+                    system_prompt += prompt.read()
+                print_vars(system_prompt)
             except Exception as err:
                 print('Error reloading variables!\n#########\n')
                 print(traceback.print_exception(err))
                 print('#########\n')
         else:
-            url = "https://chat.illinois.edu/api/chat-api/chat"
+            url = "https://sequitor01.atlas.illinois.edu/v1/chat/completions"
             headers = {"Content-Type": "application/json"}
-            # System prompt doesn't seem to work for any of the free models
-            # this workaround of explicitly stuffing it into the user prompt does!
-            if vars.model in vars.available_models:
-                message = vars.system_prompt + message
+            headers['Authorization'] = f'Bearer {vars.api_key}'
+
             data = {"model":vars.model,
                     "messages":[
                         {"role": "system",
-                         "content": vars.system_prompt},
-                        {"role":"user",
-                         "content": message}
+                         "content": system_prompt}
                     ],
-                    "api_key": vars.api_key,
-                    "course_name": vars.course_name,
-                    "stream": True,
                     "temperature": vars.temperature,
-                    "retrieval_only": False}
+                    "reasoning_effort": vars.reasoning_effort}
             if vars.use_last_response:
                 data['messages'].append({'role':'assistant','content':lastresponse})
+            data['messages'].append({"role":"user","content": message})
             before = time.time()
-            req = urllib.request.Request(url, json.dumps(data).encode('UTF-8'),headers,method="POST")
+            req = urllib.request.Request(url, json.dumps(data).encode(encoding='UTF-8'),headers,method="POST")
             with urllib.request.urlopen(req) as resp:
-                response = resp.read().decode('UTF-8', errors='ignore')
-                # Qwen models prepend the response with a <think> el
-                response = response.split('<think>')[-1].split('</think>')
-                if len(response) == 2:
-                    print('Internal monologue:\n' + response[0] + '\n\nMessage:\n' + response[1])
-                    lastresponse = response[1]
-                else:
-                    print('Message:\n' + response[0])
-                    lastresponse = response[0]
-                print('Round trip duration: ' + secs2time(time.time() - before) + '\n')
+                response = json.loads(resp.read().decode(encoding='UTF-8', errors='ignore'))
+            after = time.time() 
+            duration = after - before
+            lastresponse = log_data(message, response, duration, before)
+            print(lastresponse)
+            print('Round trip duration: ' + secs2time(duration) + '\n')
+
                 
                 
 

@@ -1,21 +1,17 @@
-# api_key is required, click the "Generate API Key" button in the API menu for your chatbot
-api_key = "uc_longhashkey"
+api_key = "String_from_PEAR"
 
-# The chatbot name, located in the URL after chat.illinois.edu/{right_here}/
-course_name = "Test-Project-liam"
+instructions_filename = "instructions.txt"
+knowledgebase_filename = "knowledgebase.md"
 
-# This is text hidden from the user that provides extra context and customization, including prompts to control the personality of the responses, to a degree
-system_prompt = """
-You are a helpful yet playful leprechaun.
+#temperature ranges from 0.0-2.0
 
-You are conspicuously protective of your lucky charms.
-"""
-
-# A scale variable from 0.0 to 1.0, where 0.0 is a maximally constrained and authoritative communicator;
-# whereas 1.0 is unconstrained and "creative"
 temperature = 0.1
 
-# Models currently available in Chat Illinois, ordered by largest to smallest
+reasoning_efforts = ['none','minimal','low','medium','high','xhigh','max']
+reasoning_effort = 'low'
+
+use_last_response = False
+
 available_models = ["Qwen/Qwen2.5-VL-72B-Instruct",
                     "deepseek-r1:14b-qwen-distill-fp16",
                     "gpt-oss:120b",
@@ -30,10 +26,7 @@ available_models = ["Qwen/Qwen2.5-VL-72B-Instruct",
                     "gemini-flash-latest",
                     "gemini-pro-latest"
                     ]
+# The model should not be changed: the above are models available in Chat Illinois, the local server is only running this model at this time
 
-# Which model to use (alternatively, you could use available_models[0] to use the first and "best" one)
-model = "gemini-3.1-flash-lite"
-
-# Should the bot's last response be included in the context to keep a conversation flowing?
-use_last_response = False
+model = "nvidia/Qwen3.8-27B-NVFP4"
 

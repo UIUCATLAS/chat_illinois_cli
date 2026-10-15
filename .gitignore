@@ -1,2 +1,4 @@
 vars.py
 __pycache__
+results/*
+!results/readme.md
