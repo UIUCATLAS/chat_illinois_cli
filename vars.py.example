@@ -28,5 +28,5 @@ available_models = ["Qwen/Qwen2.5-VL-72B-Instruct",
                     ]
 # The model should not be changed: the above are models available in Chat Illinois, the local server is only running this model at this time
 
-model = "nvidia/Qwen3.8-27B-NVFP4"
+model = "qwen3.8-27b"
 
