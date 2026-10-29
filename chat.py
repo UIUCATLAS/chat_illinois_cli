@@ -42,7 +42,7 @@ def print_vars(system_prompt):
     print("Temp: " + str(vars.temperature))
     print("Effort: " + vars.reasoning_effort)
     print("Use last response: " + str(vars.use_last_response))
-    print("System Prompt:\n" + system_prompt[:1000] + '...\n')
+    print(f"System Prompt length: {str(len(system_prompt))}...\n")
 
 def log_data(question, response, duration, before):
     pathname = f'results/{str(before).split('.')[0]}'
@@ -112,12 +112,19 @@ def main():
                 data['messages'].append({'role':'assistant','content':lastresponse})
             data['messages'].append({"role":"user","content": message})
             before = time.time()
-            req = urllib.request.Request(url, json.dumps(data).encode(encoding='UTF-8'),headers,method="POST")
-            with urllib.request.urlopen(req) as resp:
-                response = json.loads(resp.read().decode(encoding='UTF-8', errors='ignore'))
+            try:
+                req = urllib.request.Request(url, json.dumps(data).encode(encoding='UTF-8'),headers,method="POST")
+                with urllib.request.urlopen(req) as resp:
+                    response = json.loads(resp.read().decode(encoding='UTF-8', errors='ignore'))
+            except urllib.error.HTTPError as err:
+                response = f'Error code {str(err.code)}: {err.reason}'
             after = time.time() 
             duration = after - before
-            lastresponse = log_data(message, response, duration, before)
+            if type(response) != str:
+                lastresponse = log_data(message, response, duration, before)
+            else:
+                lastresponse = ''
+                print(response)
             print(lastresponse)
             print('Round trip duration: ' + secs2time(duration) + '\n')
 
