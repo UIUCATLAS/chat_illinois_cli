@@ -7,7 +7,10 @@ knowledgebase_filename = "knowledgebase.md"
 
 temperature = 0.1
 
-reasoning_efforts = ['none','minimal','low','medium','high','xhigh','max']
+#reasoning_efforts = ['none','minimal','low','medium','high','xhigh','max']
+# It may be model-specific, but only these three values are allowed as configured
+reasoning_efforts = ['low','medium','xhigh']
+
 reasoning_effort = 'low'
 
 use_last_response = False
